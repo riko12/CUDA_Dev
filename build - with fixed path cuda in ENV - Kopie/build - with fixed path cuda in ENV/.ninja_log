@@ -1,0 +1,6 @@
+# ninja log v6
+19	582	7529674789866582	CMakeFiles/vector_add.dir/main.cpp.obj	3dd90e2ba34c8ace
+7	4315	7529674789746902	CMakeFiles/cuda_kernels.dir/vector_add.cu.obj	3a1b07f081599d2b
+4317	4373	7529674832841447	cuda_kernels.lib	7f8720b592567447
+4373	7427	7529674833400446	CMakeFiles/vector_add.dir/cmake_device_link.obj	c6506a9f52a3af16
+7427	8987	7529674863944378	vector_add.exe	af96f631ab7e8204

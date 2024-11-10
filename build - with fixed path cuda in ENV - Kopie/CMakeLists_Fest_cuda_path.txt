@@ -1,0 +1,41 @@
+# cmake .. -G Ninja  -DCMAKE_BUILD_TYPE=Release -DCUDA_TOOLKIT_ROOT_DIR="C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.6" -DCMAKE_CUDA_COMPILER="C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.6/bin/nvcc.exe"
+
+cmake_minimum_required(VERSION 3.10)
+
+# Define CUDA paths explicitly
+set(CMAKE_CUDA_COMPILER "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.6/bin/nvcc.exe")
+set(CUDAToolkit_ROOT "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.6")
+
+# Set environment variables
+set(ENV{CUDA_PATH} "${CUDAToolkit_ROOT}")
+set(ENV{CUDA_TOOLKIT_ROOT_DIR} "${CUDAToolkit_ROOT}")
+
+# Set Visual Studio CUDA toolkit version
+set(CMAKE_VS_PLATFORM_TOOLSET_CUDA "12.6")
+set(CMAKE_VS_PLATFORM_TOOLSET_CUDA_CUSTOM_DIR "${CUDAToolkit_ROOT}")
+
+# Declare project
+project(cuda_vector_add LANGUAGES CXX CUDA)
+
+# Set C++ standard
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CUDA_ARCHITECTURES 86)
+
+# Create CUDA library
+add_library(cuda_kernels STATIC
+    vector_add.cu
+)
+
+# Set CUDA properties
+set_target_properties(cuda_kernels PROPERTIES
+    CUDA_SEPARABLE_COMPILATION ON
+)
+
+# Create main executable
+add_executable(vector_add
+    main.cpp
+)
+
+# Link libraries
+target_link_libraries(vector_add PRIVATE cuda_kernels)

@@ -1,0 +1,79 @@
+cmake_minimum_required(VERSION 3.10)
+
+# Clear any existing CUDA paths from environment to avoid conflicts
+unset(ENV{CUDA_PATH})
+unset(ENV{CUDA_TOOLKIT_ROOT_DIR})
+unset(ENV{CUDA_PATH_V12_6})
+
+# Set CUDA paths explicitly before project declaration
+set(CMAKE_CUDA_COMPILER "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.6/bin/nvcc.exe" CACHE STRING "" FORCE)
+set(CUDA_TOOLKIT_ROOT_DIR "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.6" CACHE STRING "" FORCE)
+set(CUDAToolkit_ROOT "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.6" CACHE STRING "" FORCE)
+set(CMAKE_CUDA_ARCHITECTURES 86 CACHE STRING "" FORCE)
+
+# Additional VS2022 specific settings
+set(CMAKE_GENERATOR_TOOLSET "cuda=12.6")
+set(CMAKE_VS_PLATFORM_TOOLSET_CUDA "12.6")
+set(CMAKE_VS_PLATFORM_TOOLSET_CUDA_CUSTOM_DIR "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.6")
+
+# Now declare the project
+project(cuda_vector_add CUDA CXX)
+
+# Set C++ standard
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Visual Studio specific settings
+if(MSVC)
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
+    
+    # Add CUDA custom build rules
+    set(CUDA_PROPAGATE_HOST_FLAGS OFF)
+    set(CUDA_SEPARABLE_COMPILATION ON)
+endif()
+
+# Find CUDA Toolkit
+find_package(CUDAToolkit REQUIRED)
+
+# Create CUDA library
+add_library(cuda_kernels STATIC
+    vector_add.cu
+)
+
+# Set properties for the CUDA library
+set_target_properties(cuda_kernels PROPERTIES
+    CUDA_SEPARABLE_COMPILATION ON
+    POSITION_INDEPENDENT_CODE ON
+    CUDA_RESOLVE_DEVICE_SYMBOLS ON
+)
+
+# Set CUDA specific compile options
+target_compile_options(cuda_kernels PRIVATE
+    $<$<COMPILE_LANGUAGE:CUDA>:
+        --compiler-options /MT$<$<CONFIG:Debug>:d>
+        -Xcompiler "/MT$<$<CONFIG:Debug>:d>"
+    >
+)
+
+# Include directories
+target_include_directories(cuda_kernels
+    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
+    PUBLIC ${CUDAToolkit_INCLUDE_DIRS}
+)
+
+# Create main executable
+add_executable(vector_add
+    main.cpp
+)
+
+# Link libraries
+target_link_libraries(vector_add
+    PRIVATE cuda_kernels
+    PRIVATE CUDA::cudart_static
+)
+
+# Set output directories
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)

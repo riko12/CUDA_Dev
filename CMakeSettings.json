@@ -1,0 +1,27 @@
+{
+  "configurations": [
+    {
+      "name": "x64-Debug",
+      "generator": "Ninja",
+      "configurationType": "Debug",
+      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "buildRoot": "${projectDir}\\out\\build\\${name}",
+      "installRoot": "${projectDir}\\out\\install\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "variables": [
+        {
+          "name": "CMAKE_CUDA_COMPILER",
+          "value": "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.6/bin/nvcc.exe",
+          "type": "FILEPATH"
+        },
+        {
+          "name": "CUDA_TOOLKIT_ROOT_DIR",
+          "value": "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.6",
+          "type": "PATH"
+        }
+      ]
+    }
+  ]
+}
